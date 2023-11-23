@@ -248,7 +248,7 @@ def getAllEmployees(request):
 @api_view(["GET", "PUT", "DELETE"])
 def getEmployeeById(request, pk):
     try:
-        employee = Employees.objects.get(employee_id=pk)
+        employee = Employees.objects.get(employeeid=pk)
     except Exception:
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -257,7 +257,7 @@ def getEmployeeById(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     if request.method == 'PUT':
-        request.data['employee_id'] = pk
+        request.data['employeeid'] = pk
         serializer = EmployeeSerializer(employee, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -313,21 +313,27 @@ def punto1(request):
     serializados = Punto1Serializer(resultados, many=True)
     return Response(serializados.data)
 
+@api_view(["GET"])
+def punto1(request):
 
+    supplierid = request.query_params.get("supplierid")
+    categoryid = request.query_params.get("categoryid")
+    stockmin = request.query_params.get("stockmin")
+    productosFiltrados = Products.objects.filter(supplierid  = supplierid, categoryid = categoryid)
+    resultados = []
+    if not productosFiltrados:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    for p in productosFiltrados:
+        suma = p.unitsinstock + p.unitsonorder
+        if suma < int(stockmin) and p.discontinued != 1:
+            resultado = {
+                "ProductId" : p.productid,
+                "ProductName" : p.productname,
+                "StockFuturo" : f"{suma} - ${p.unitprice}"
+            }
+            resultados.append(resultado)
+    if not resultados:
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-#clientes = Clientes.objects.filter(nombre__contains = 'A')
-#clientes = Clientes.objects.all()[:4] <- sublists
-#clientes = Clientes.objects.all().order_by('-nombre') descendente
-#clientes = Clientes.objects.all().order_by('nombre', 'altura') ascendente
-#clientes = Clientes.objects.all()
-#clientes = Clientes.objects.filter(apellido='ALONSO')
-#clientes = Clientes.objects.filter(cod_cliente__gte=5) mayores o iguales a 5
-#clientes = Clientes.objects.filter(cod_cliente__lte=4) menores o iguales a 4
-#clientes = Clientes.objects.filter(apellido__startswith = 'A')
-#clientes = Clientes.objects.filter(nombre__startswith = 'A', cod_condicion_iva__gte=2 )
-#clientes = Clientes.objects.filter(Q(apellido__startswith = 'M') |Q(apellido__startswith = 'C') )
-#serializados = ClientesSerializer(clientes,many = True)
-#return Response(serializados.data)
-
-
+    productoSerializer = ProductoSerializer(resultados, many=True)
+    return Response(productoSerializer.data, status=status.HTTP_200_OK)
