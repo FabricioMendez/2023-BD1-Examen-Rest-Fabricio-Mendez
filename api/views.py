@@ -296,25 +296,6 @@ def get_orders_with_details(request):
 
 @api_view(["GET"])
 def punto1(request):
-    letra = request.query_params.get("letter")
-    year = request.query_params.get("year")
-
-    empleadosFiltrados = Employees.objects.filter(firstname__icontains = letra)
-    resultados = []
-    for e in empleadosFiltrados:
-        resultado = {
-            "id" : e.employeeid,
-            "nombre" : e.firstname,
-            "apellido" : e.lastname,
-            "birthdate" : e.birthdate
-        }
-        if e.birthdate.year >= int(year):
-            resultados.append(resultado)
-    serializados = Punto1Serializer(resultados, many=True)
-    return Response(serializados.data)
-
-@api_view(["GET"])
-def punto1(request):
 
     supplierid = request.query_params.get("supplierid")
     categoryid = request.query_params.get("categoryid")
