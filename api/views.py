@@ -316,12 +316,14 @@ def punto1(request):
 
 
 
-
-#clientes = Clientes.objects.all()[:4]
-#clientes = Clientes.objects.all().order_by('nombre', 'altura')
+#clientes = Clientes.objects.filter(nombre__contains = 'A')
+#clientes = Clientes.objects.all()[:4] <- sublists
+#clientes = Clientes.objects.all().order_by('-nombre') descendente
+#clientes = Clientes.objects.all().order_by('nombre', 'altura') ascendente
 #clientes = Clientes.objects.all()
 #clientes = Clientes.objects.filter(apellido='ALONSO')
-#clientes = Clientes.objects.filter(cod_cliente__gte=5)
+#clientes = Clientes.objects.filter(cod_cliente__gte=5) mayores o iguales a 5
+#clientes = Clientes.objects.filter(cod_cliente__lte=4) menores o iguales a 4
 #clientes = Clientes.objects.filter(apellido__startswith = 'A')
 #clientes = Clientes.objects.filter(nombre__startswith = 'A', cod_condicion_iva__gte=2 )
 #clientes = Clientes.objects.filter(Q(apellido__startswith = 'M') |Q(apellido__startswith = 'C') )
